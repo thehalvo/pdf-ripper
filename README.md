@@ -31,20 +31,35 @@ pip install -r requirements.txt
 
 ## Usage
 
+The tool supports two modes: single file processing and batch processing.
+
+### Single File Mode
+
 ```bash
 python pdf_ripper.py <pdf_path> [options]
 ```
+
+### Batch Mode
+
+```bash
+python pdf_ripper.py --batch [options]
+```
+
+Place your PDF files in the `books/` directory and run with `--batch` to process all of them.
 
 ### Arguments
 
 | Argument | Description |
 |----------|-------------|
-| `pdf_path` | Path to the input PDF file (required) |
-| `-o, --output` | Output markdown file path (default: `output/<pdf_name>.md`) |
+| `pdf_path` | Path to the input PDF file (required for single file mode) |
+| `-b, --batch` | Process all PDFs in the books directory |
+| `--books-dir` | Directory containing PDF files for batch mode (default: `books`) |
+| `-o, --output` | Output path: file for single mode, directory for batch mode (default: `output/`) |
 | `-p, --pages-per-chunk` | Number of pages per progress update (default: `10`) |
 | `-d, --dpi` | DPI for rendering pages (default: `300`, higher = better quality but slower) |
+| `--no-skip` | In batch mode, reprocess PDFs even if output file already exists |
 
-### Examples
+### Single File Examples
 
 Process a PDF with default settings (outputs to `output/document.md`):
 ```bash
@@ -66,6 +81,28 @@ Use higher DPI for better quality (slower):
 python pdf_ripper.py document.pdf -d 400
 ```
 
+### Batch Processing Examples
+
+Process all PDFs in the default `books/` directory:
+```bash
+python pdf_ripper.py --batch
+```
+
+Process all PDFs from a custom directory:
+```bash
+python pdf_ripper.py --batch --books-dir /path/to/pdfs
+```
+
+Process all PDFs with custom output directory and DPI:
+```bash
+python pdf_ripper.py --batch -o /path/to/output -d 200
+```
+
+Reprocess all PDFs (including those with existing output files):
+```bash
+python pdf_ripper.py --batch --no-skip
+```
+
 ## Output
 
 The tool creates a single markdown file containing all extracted text with:
@@ -80,3 +117,5 @@ The tool creates a single markdown file containing all extracted text with:
 - Processing time depends on page count and DPI setting
 - For a 3340-page PDF at 300 DPI, expect several hours of processing time
 - Lower DPI (150-200) is faster but may reduce accuracy for small text
+- In batch mode, PDFs are processed alphabetically one at a time
+- By default, batch mode skips PDFs that already have output files (use `--no-skip` to override)
